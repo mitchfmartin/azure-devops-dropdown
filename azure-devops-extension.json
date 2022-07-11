@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "azure-devops-dropdown",
     "publisher": "jonvest",
-    "version": "1.0.414",
+    "version": "1.0.420",
     "name": "Azure DevOps Dropdown Control",
     "description": "Azure DevOps Dropdown Control",
     "categories": [

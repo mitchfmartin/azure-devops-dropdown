@@ -25,7 +25,7 @@ import { dropdownItems } from "./Data";
 export class AzureDevOpsDropDown extends React.Component<{}, {}> {
 
     private selection = new DropdownSelection();
-    private opts: string[] = ["apple","banana","orange"];
+    private readonly _root = document.getElementById("root") as HTMLElement;
 
     constructor(props: {}) {
         super(props);
@@ -35,9 +35,8 @@ export class AzureDevOpsDropDown extends React.Component<{}, {}> {
         SDK.init();
     }
     public componentDidUpdate() {
-        //SDK.resize(this._root.scrollWidth || 200, this._root.scrollHeight || 40);
-        SDK.resize();
-    }
+        this._resize;
+     }
     public render() {
         return (
             <div style={{ margin: "8px" }}>
@@ -47,17 +46,15 @@ export class AzureDevOpsDropDown extends React.Component<{}, {}> {
                     placeholder="Select an Option"
                     items={dropdownItems}
                     selection={this.selection}   
+                    onExpand={this._resize}
+                    onCollapse={this._resize}
                 />
             </div>
         );
     }
-
-
-    private async loadSuggestedValues(): Promise<string[]> {
-        const workItemFormService = await SDK.getService<IWorkItemFormService>(WorkItemTrackingServiceIds.WorkItemFormService);
-        return await  workItemFormService.getAllowedFieldValues(SDK.getConfiguration().witInputs.FieldName) as string[];
+    private _resize = () => {
+        SDK.resize(this._root.scrollWidth || 200, this._root.scrollHeight || 40);
     }
-
 }
 
 export default AzureDevOpsDropDown;
