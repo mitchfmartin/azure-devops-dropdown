@@ -19,24 +19,61 @@ import * as ReactDOM from "react-dom";
 import "./AzDoDropDown.scss";
 
 import { Dropdown } from "azure-devops-ui/Dropdown";
-import { DropdownSelection } from "azure-devops-ui/Utilities/DropdownSelection";
+import { DropdownSelection} from "azure-devops-ui/Utilities/DropdownSelection";
 import { dropdownItems } from "./Data";
 
 export class AzureDevOpsDropDown extends React.Component<{}, {}> {
 
     private selection = new DropdownSelection();
-    private readonly _root = document.getElementById("root") as HTMLElement;
+
+    private resized = false;
+    private collapseEvent = false;
 
     constructor(props: {}) {
         super(props);
     }
 
     public componentDidMount() {
-        SDK.init();
+      SDK.init();
+       
+      let dropdownComponent = this;
+      
+      
+      document.body.addEventListener( 'click', function ( e ) {
+        let _input = document.getElementById("__bolt-textfield-input-1");
+       /* if (_input !== null) {
+            console.log("expanded: "+_input.getAttribute("aria-expanded"));
+        }
+        console.log("collapseEvent: "+dropdownComponent.collapseEvent);
+        console.log("resized: "+dropdownComponent.resized);*/
+        if (e.target && (e.target as HTMLElement).id === "__bolt-textfield-input-1"){
+            if (
+                dropdownComponent.collapseEvent == false && 
+                dropdownComponent.resized == false && 
+                _input !== null && 
+                _input.getAttribute("aria-expanded") == "false"
+            ){
+                SDK.resize(document.body.scrollWidth, 375);
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                e.preventDefault();
+                dropdownComponent.resized = true;
+                setTimeout(()=>{
+                    let _input = document.getElementById("__bolt-textfield-input-1");
+                    if (_input !== null) {
+                        _input.click();
+                    }
+
+                },200);
+            }
+          
+        } 
+        if (dropdownComponent.collapseEvent) {
+            dropdownComponent.collapseEvent = false;
+        }
+      },true);
+      
     }
-    public componentDidUpdate() {
-        this._resize;
-     }
     public render() {
         return (
             <div style={{ margin: "8px" }}>
@@ -45,15 +82,24 @@ export class AzureDevOpsDropDown extends React.Component<{}, {}> {
                     className="example-dropdown"
                     placeholder="Select an Option"
                     items={dropdownItems}
-                    selection={this.selection}   
-                    onExpand={this._resize}
-                    onCollapse={this._resize}
+                    selection={this.selection}  
+                    onCollapse={this._resizeCollapse}
                 />
             </div>
         );
     }
-    private _resize = () => {
-        SDK.resize(this._root.scrollWidth || 200, this._root.scrollHeight || 40);
+    private _resizeCollapse = () => {
+        console.log("resizeCollapse");
+
+        if(this.resized == true){
+            SDK.resize(document.body.scrollWidth, 75);        
+            this.resized = false;
+            this.collapseEvent = true;
+            setTimeout(()=>{
+                this.collapseEvent = false;
+            },200);
+        }
+
     }
 }
 
